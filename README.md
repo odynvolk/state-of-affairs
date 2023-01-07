@@ -1,2 +1,11 @@
-# state-of-affairs
-How are we doing?
+# State of affairs
+
+### Usage
+
+Start the project:
+
+```
+deno task start
+```
+
+This will watch the project directory and restart as necessary.
