@@ -1,9 +1,7 @@
-import {ETwitterStreamEvent, TwitterApi} from "npm:twitter-api-v2@^1.13.0";
+import { ETwitterStreamEvent, TwitterApi } from "npm:twitter-api-v2@^1.13.0";
 
 import analyze from "./analyse.ts";
 import db from "./db.ts";
-
-await db.init();
 
 export interface TweetSchema {
   score: number;
@@ -31,6 +29,8 @@ export default async () => {
   const token = Deno.env.get("TWITTER_BEARER_TOKEN");
   if (!token) throw Error("Missing environment variable: TWITTER_BEARER_TOKEN");
 
+  await db.init();
+
   const client = new TwitterApi(
     token,
   );
@@ -38,14 +38,17 @@ export default async () => {
   const rulesCurrent = await client.v2.streamRules();
   if (rulesCurrent.data?.length) {
     await client.v2.updateStreamRules({
-      delete: {ids: rulesCurrent.data.map((rule) => rule.id)},
+      delete: { ids: rulesCurrent.data.map((rule) => rule.id) },
     });
   }
 
   const rulesNew = subjects.reduce((acc, subject) => {
     // add: [{ value: "JavaScript lang:en followers_count:500 tweets_count:100 listed_count:5" }, { value: "NodeJS lang:en followers_count:500 tweets_count:100 listed_count:5" }],
     subject.keywords.forEach((keyword) => {
-      acc.push({value: `${keyword} lang:en -is:retweet`, tag: `${subject.category}:${keyword}`});
+      acc.push({
+        value: `${keyword} lang:en -is:retweet`,
+        tag: `${subject.category}:${keyword}`,
+      });
     });
 
     return acc;

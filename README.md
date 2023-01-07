@@ -1,5 +1,9 @@
 # State of affairs
 
+Fetches...
+
+1. Tweets from [https://twitter.com/](https://twitter.com/)
+
 ### Prerequisites:
 
 - Deno
@@ -30,9 +34,10 @@ This will watch the project directory and restart as necessary.
 
 ## Testing
 
-Tests use the built in test runner in Deno. Try to write tests in a meaningful way as to
-describe what it is you're testing and what resources are available. Testing does not only test a piece of code that it
-actually works but is also used for documentation purposes. Focus on testing what is vital for the feature.
+Tests use the built in test runner in Deno. Try to write tests in a meaningful
+way as to describe what it is you're testing and what resources are available.
+Testing does not only test a piece of code that it actually works but is also
+used for documentation purposes. Focus on testing what is vital for the feature.
 
 To run all tests...
 
