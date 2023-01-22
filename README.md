@@ -1,5 +1,8 @@
 # State of affairs
 
+An application for gathering data from different sources and doing an sentiment
+analysis on it.
+
 Fetches...
 
 1. Tweets from [https://twitter.com/](https://twitter.com/)
@@ -8,10 +11,20 @@ Fetches...
 
 - Deno
 
-On MacOS the easier way to insall Deno is through Brew package manager.
+For running this fabulous little thing. On MacOS the easiest way to install Deno
+is through Brew package manager.
 
 ```bash
 $ brew install deno
+```
+
+- MongoDB
+
+For storing tweets. On MacOS the easiest way to install Deno is through Brew
+package manager.
+
+```bash
+$ brew install mongodb-community
 ```
 
 Configuration:

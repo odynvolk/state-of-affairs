@@ -14,22 +14,20 @@ export interface TweetSchema {
 }
 
 interface SubjectSchema {
-  category: string;
+  subject: string;
   keywords: string[];
 }
 
-const subjects: SubjectSchema[] = [
+export const subjects: SubjectSchema[] = [
   {
-    category: "javascript",
-    keywords: ["javascript", "nodejs"],
+    subject: "tesla",
+    keywords: ["tesla", "$tsla"],
   },
 ];
 
 export default async () => {
   const token = Deno.env.get("TWITTER_BEARER_TOKEN");
   if (!token) throw Error("Missing environment variable: TWITTER_BEARER_TOKEN");
-
-  await db.init();
 
   const client = new TwitterApi(
     token,
@@ -42,12 +40,12 @@ export default async () => {
     });
   }
 
-  const rulesNew = subjects.reduce((acc, subject) => {
+  const rulesNew = subjects.reduce((acc: any[], subject) => {
     // add: [{ value: "JavaScript lang:en followers_count:500 tweets_count:100 listed_count:5" }, { value: "NodeJS lang:en followers_count:500 tweets_count:100 listed_count:5" }],
     subject.keywords.forEach((keyword) => {
       acc.push({
         value: `${keyword} lang:en -is:retweet`,
-        tag: `${subject.category}:${keyword}`,
+        tag: `${subject.subject}:${keyword}`,
       });
     });
 
@@ -63,8 +61,8 @@ export default async () => {
 
   stream.on(
     ETwitterStreamEvent.Data,
-    async (tweet: undefined) => {
-      console.log("@@@ twitter.ts  26", JSON.stringify(tweet, null, 2));
+    async (tweet: any) => {
+      console.log("Got tweet", JSON.stringify(tweet, null, 2));
 
       const {
         id,
