@@ -55,5 +55,5 @@ used for documentation purposes. Focus on testing what is vital for the feature.
 To run all tests...
 
 ```bash
-$ deno test --allow-read --allow-env
+IS_TEST=true deno test --allow-read --allow-write --allow-env --allow-net --allow-run
 ```

@@ -12,6 +12,6 @@ import twindConfig from "./twind.config.ts";
 
 import twitter from "./lib/twitter.ts";
 
-await twitter();
+// await twitter();
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });
