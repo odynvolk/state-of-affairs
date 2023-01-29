@@ -1,7 +1,9 @@
 import { ETwitterStreamEvent, TwitterApi } from "npm:twitter-api-v2@^1.13.0";
 
-import analyze from "./analyse.ts";
+import analyser from "./analyser.ts";
 import db from "./db.ts";
+
+await analyser.init();
 
 export interface TweetSchema {
   score: number;
@@ -25,7 +27,7 @@ export const subjects: SubjectSchema[] = [
   },
 ];
 
-export default async () => {
+export default async (numberOfTweetsLimit: number) => {
   const token = Deno.env.get("TWITTER_BEARER_TOKEN");
   if (!token) throw Error("Missing environment variable: TWITTER_BEARER_TOKEN");
 
@@ -41,10 +43,10 @@ export default async () => {
   }
 
   const rulesNew = subjects.reduce((acc: any[], subject) => {
-    // add: [{ value: "JavaScript lang:en followers_count:500 tweets_count:100 listed_count:5" }, { value: "NodeJS lang:en followers_count:500 tweets_count:100 listed_count:5" }],
     subject.keywords.forEach((keyword) => {
       acc.push({
-        value: `${keyword} lang:en -is:retweet`,
+        value:
+          `${keyword} lang:en -is:retweet followers_count:500 tweets_count:100`,
         tag: `${subject.subject}:${keyword}`,
       });
     });
@@ -53,6 +55,7 @@ export default async () => {
   }, []);
   await client.v2.updateStreamRules({ add: rulesNew });
 
+  let numberOfTweets = 0;
   const stream = await client.v2.searchStream({
     "tweet.fields": ["author_id"],
   });
@@ -72,17 +75,26 @@ export default async () => {
 
       const [subject, keyword] = tweet?.matching_rules[0].tag?.split(":");
 
-      const score = analyze(text);
-      const tweetScored: TweetSchema = {
-        score,
-        text,
-        subject,
-        keyword,
-        id,
-        author_id,
-        date: new Date(),
-      };
-      await db.insert(tweetScored);
+      analyser.analyse(text, async (score: number) => {
+        const tweetScored: TweetSchema = {
+          score,
+          text,
+          subject,
+          keyword,
+          id,
+          author_id,
+          date: new Date(),
+        };
+
+        await db.insert(tweetScored);
+      });
+
+      numberOfTweets += 1;
+
+      if (numberOfTweets === numberOfTweetsLimit) {
+        console.log("Tweet limit reached, closing stream.");
+        stream.close();
+      }
     },
   );
 };

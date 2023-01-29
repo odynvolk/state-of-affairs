@@ -12,6 +12,8 @@ import twindConfig from "./twind.config.ts";
 
 import twitter from "./lib/twitter.ts";
 
-// await twitter();
+if (Boolean(Deno.env.get("TWITTER_PULL"))) {
+  await twitter(Number(Deno.env.get("TWITTER_PULL_LIMIT")));
+}
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });

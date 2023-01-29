@@ -1,20 +1,22 @@
 import { Head } from "$fresh/runtime.ts";
 
 import db from "../lib/db.ts";
-import Counter from "../islands/Counter.tsx";
 import { subjects, TweetSchema } from "../lib/twitter.ts";
 
 import { Chart } from "$fresh_charts/mod.ts";
 import { ChartColors, transparentize } from "$fresh_charts/utils.ts";
 import { Handlers } from "$fresh/src/server/types.ts";
 
+const ONE_DAY_IN_MILLISECONDS = 86400000;
+
 export const handler: Handlers = {
   GET: async function (_, ctx) {
     const startDate = new Date();
+    startDate.setDate(startDate.getDate() + 1);
+
     const dates: Date[] = [];
     for (let i = 14; i > 0; i--) {
-      const date = new Date();
-      date.setDate(startDate.getDate() - i);
+      const date = new Date(startDate.getTime() - (i * ONE_DAY_IN_MILLISECONDS));
       dates.push(date);
     }
 
@@ -52,7 +54,11 @@ export const handler: Handlers = {
   },
 };
 
-export default function Home({ data }) {
+export default function Home({
+  data: {
+    scores,
+  },
+}: any) {
   return (
     <>
       <Head>
@@ -63,24 +69,24 @@ export default function Home({ data }) {
           State of affairs
         </h1>
       </div>
-      <div class="chart">
+      <div class="p-4 mx-auto max-w-screen-md chart">
         <Chart
           type="line"
           options={{
             devicePixelRatio: 1,
           }}
           data={{
-            labels: data.scores.map(({ date }: any) =>
+            labels: scores.map(({ date }: any) =>
               `${date.getDate()}/${date.getMonth() + 1}`
             ),
             datasets: [{
-              label: `Subject: ${data.scores[0]?.subject} Tweets: ${
-                data.scores?.reduce((acc: number, score: any) => {
+              label: `Subject: ${scores[0]?.subject} Tweets: ${
+                scores?.reduce((acc: number, score: any) => {
                   acc += score.numberOfTweets;
                   return acc;
                 }, 0)
               }`,
-              data: data.scores?.map((score: any) => score.score),
+              data: scores?.map((score: any) => score.score),
               borderColor: ChartColors.Red,
               backgroundColor: transparentize(ChartColors.Red, 0.5),
               borderWidth: 2,
