@@ -17,27 +17,29 @@ const clearDb = async () => {
 
 const find = async (
   subject: string,
-  startDate: Date | undefined,
-  endDate: Date | undefined,
-): Promise<TweetSchema[]> => {
+  dates: Date[],
+): Promise<any[]> => {
   if (!collection) await init();
 
-  const filter: any = { subject };
-  if (startDate || endDate) {
-    filter.date = {};
-    if (startDate) {
-      filter.date["$gte"] = startDate;
-    }
-    if (endDate) {
-      filter.date["$lt"] = endDate;
-    }
-  }
+  const daysWithTweets = await Promise.all(dates.map((date) => {
+    const beginningOfDay = new Date(date.getTime());
+    beginningOfDay.setUTCHours(0, 0, 0, 0);
 
-  const result = await collection.find(filter).map((tweet) => {
-    return tweet;
-  });
-  console.log("Found documents =>", result);
-  return result;
+    const endOfDay = new Date(date.getTime());
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const filter: any = {
+      subject,
+      date: {
+        "$gte": beginningOfDay,
+        "$lt": endOfDay,
+      },
+    };
+
+    return collection.find(filter).map((tweet) => tweet);
+  }));
+
+  return daysWithTweets;
 };
 
 const insert = async (tweet: TweetSchema): Promise<void> => {
@@ -55,7 +57,6 @@ const init = async (): Promise<void> => {
 };
 
 const teardown = async () => {
-  await clearDb();
   await client.close();
   console.log("Connection to database closed");
 };

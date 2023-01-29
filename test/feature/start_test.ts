@@ -15,7 +15,7 @@ import { TweetSchema } from "../../lib/twitter.ts";
 
 beforeAll(async () => {
   // setup db
-  Deno.env.set("IS_TEST", "true");
+  await db.clearDb();
 
   const sixDaysAgo = new Date();
   sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
@@ -53,8 +53,6 @@ beforeAll(async () => {
     date: new Date(),
   };
 
-  await db.clearDb();
-
   await db.insert(tweet1);
   await db.insert(tweet2);
   await db.insert(tweet3);
@@ -78,26 +76,11 @@ describe("Start page", () => {
       stderr: "inherit",
     });
 
-    // const decoder = new TextDecoder();
-    // const lines = readableStreamFromReader(process.stdout);
-    //
-    // let started = false;
-    // for await (const line of lines) {
-    //   if (decoder.decode(line).includes("Listening on http://")) {
-    //     started = true;
-    //     break;
-    //   }
-    // }
-    //
-    // if (!started) {
-    //   throw new Error("Server didn't start up");
-    // }
-
     await delay(1000);
 
     const browser: Browser = await puppeteer.launch({
       args: ["--no-sandbox"],
-      headless: true,
+      headless: false,
     });
     const page: Page = await browser.newPage();
     await t.step("Page loaded", async () => {
@@ -106,10 +89,18 @@ describe("Start page", () => {
       });
     });
 
+    await t.step("Chart is displayed", async () => {
+      await page.waitForSelector(".chart");
+    });
+
+    let text: string;
     await t.step("Subject is displayed", async () => {
-      await page.waitForSelector(".subject");
-      const text = await page.$eval(".subject", (title) => title.innerText);
-      assert(text === "Subject: tesla");
+      text = await page.$eval(".chart", (title) => title.innerText);
+      assert(text.includes("Subject: tesla"));
+    });
+
+    await t.step("Tweets is displayed", () => {
+      assert(text.includes("Tweets: 2"));
     });
 
     await browser?.close();
