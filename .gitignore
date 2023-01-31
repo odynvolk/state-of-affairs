@@ -21,4 +21,5 @@ config/_revision
 
 *.log
 
-data
+# data model
+cardiffnlp/
