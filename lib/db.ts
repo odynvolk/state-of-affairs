@@ -10,8 +10,6 @@ let collection: Collection<TweetSchema>;
 const nameOfCollection = Deno.env.get("IS_TEST") ? "tweets_test" : "tweets";
 
 const clearDb = async () => {
-  if (!collection) await init();
-
   await collection.deleteMany({});
 };
 
@@ -19,8 +17,6 @@ const find = async (
   subject: string,
   dates: Date[],
 ): Promise<any[]> => {
-  if (!collection) await init();
-
   const daysWithTweets = await Promise.all(dates.map((date) => {
     const beginningOfDay = new Date(date.getTime());
     beginningOfDay.setUTCHours(0, 0, 0, 0);
@@ -43,7 +39,6 @@ const find = async (
 };
 
 const insert = async (tweet: TweetSchema): Promise<void> => {
-  if (!collection) await init();
   const result = await collection.insertOne(tweet);
   console.log("Inserted documents =>", result);
 };
@@ -64,6 +59,7 @@ const teardown = async () => {
 export default {
   clearDb,
   find,
+  init,
   insert,
   teardown,
 };

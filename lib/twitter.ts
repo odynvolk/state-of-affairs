@@ -1,8 +1,10 @@
+import { config } from "https://deno.land/x/dotenv/mod.ts";
 import { ETwitterStreamEvent, TwitterApi } from "npm:twitter-api-v2@^1.13.0";
 
 import analyser from "./analyser.ts";
 import db from "./db.ts";
 
+await db.init();
 await analyser.init();
 
 export interface TweetSchema {
@@ -20,12 +22,23 @@ interface SubjectSchema {
   keywords: string[];
 }
 
-export const subjects: SubjectSchema[] = [
-  {
-    subject: "tesla",
-    keywords: ["tesla", "$tsla"],
-  },
-];
+function readSubjectsFromConfig() {
+  return Object.entries(config()).reduce((acc: SubjectSchema[] , entry) => {
+    if (entry.length < 2) return acc;
+
+    if (entry[0].startsWith("TWITTER_SUBJECT_")) {
+      const [key, values] = entry[1].split(":");
+      acc.push({
+        subject: key,
+        keywords: values.split(";")
+      });
+    }
+
+    return acc;
+  }, [])
+}
+
+export const subjects: SubjectSchema[] = readSubjectsFromConfig();
 
 export default async (numberOfTweetsLimit: number) => {
   const token = Deno.env.get("TWITTER_BEARER_TOKEN");
@@ -46,13 +59,14 @@ export default async (numberOfTweetsLimit: number) => {
     subject.keywords.forEach((keyword) => {
       acc.push({
         value:
-          `${keyword} lang:en -is:retweet followers_count:500 tweets_count:100`,
+          `${keyword} lang:en ${Deno.env.get("TWITTER_FILTER")}`,
         tag: `${subject.subject}:${keyword}`,
       });
     });
 
     return acc;
   }, []);
+
   await client.v2.updateStreamRules({ add: rulesNew });
 
   let numberOfTweets = 0;

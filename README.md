@@ -35,6 +35,9 @@ Create a .env file with values needed in your setup.
 TWITTER_BEARER_TOKEN=<YOUR-TOKEN>
 TWITTER_PULL=true
 TWITTER_PULL_LIMIT=<NUMBER-OF-TWEETS-TO-PULL>
+TWITTER_FILTER=-is:retweet followers_count:100 tweets_count:100
+TWITTER_SUBJECT_1=tesla:tesla;$tsla
+TWITTER_SUBJECT_2=microsoft:microsoft;$msft
 ```
 
 - Python
