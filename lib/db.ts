@@ -17,7 +17,7 @@ const find = async (
   subject: string,
   dates: Date[],
 ): Promise<any[]> => {
-  const daysWithTweets = await Promise.all(dates.map((date) => {
+  return await Promise.all(dates.map((date) => {
     const beginningOfDay = new Date(date.getTime());
     beginningOfDay.setUTCHours(0, 0, 0, 0);
 
@@ -34,13 +34,11 @@ const find = async (
 
     return collection.find(filter).map((tweet) => tweet);
   }));
-
-  return daysWithTweets;
 };
 
 const insert = async (tweet: TweetSchema): Promise<void> => {
   const result = await collection.insertOne(tweet);
-  console.log("Inserted documents =>", result);
+  console.log("Inserted document =>", result);
 };
 
 const init = async (): Promise<void> => {
@@ -49,11 +47,13 @@ const init = async (): Promise<void> => {
   console.log("Connected to database");
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
+
+  Deno.addSignalListener("SIGINT", () => teardown());
 };
 
 const teardown = async () => {
+  console.log("Closing connection to database...");
   await client.close();
-  console.log("Connection to database closed");
 };
 
 export default {

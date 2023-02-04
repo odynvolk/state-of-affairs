@@ -4,8 +4,6 @@
 /// <reference lib="dom.asynciterable" />
 /// <reference lib="deno.ns" />
 
-Deno.env.set("IS_TEST", "true");
-
 import "https://deno.land/x/dotenv/load.ts";
 import { start } from "$fresh/server.ts";
 import twindPlugin from "$fresh/plugins/twind.ts";

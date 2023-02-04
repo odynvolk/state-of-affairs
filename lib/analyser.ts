@@ -1,11 +1,11 @@
-function logError(msg: string) {
+const logError = (msg: string) => {
   console.log(msg);
   Deno.exit(1);
-}
+};
 
 let ws: WebSocket;
 
-async function init() {
+const init = async () => {
   if (ws) return Promise.resolve(true);
 
   return new Promise((resolve) => {
@@ -14,13 +14,18 @@ async function init() {
       console.log("Connected to sentiment server...");
       resolve(true);
     };
-    ws.onclose = () => logError("Disconnected from server...");
+    ws.onclose = () => logError("Disconnected from sentiment server...");
     ws.onerror = (e) =>
       console.log(e instanceof ErrorEvent ? e.message : e.type);
-  });
-}
 
-function analyse(text: string, cb: Function) {
+    Deno.addSignalListener("SIGINT", () => {
+      console.log("Closing connection to sentiment server...");
+      ws.close();
+    });
+  });
+};
+
+const analyse = (text: string, cb: Function) => {
   if (!text || text.length < 10) return NaN;
 
   try {
@@ -38,7 +43,7 @@ function analyse(text: string, cb: Function) {
   } catch (_) {
     logError("Error analysing text");
   }
-}
+};
 
 export default {
   analyse,

@@ -13,6 +13,8 @@ import { delay } from "https://deno.land/std@0.168.0/async/delay.ts";
 import db from "../../lib/db.ts";
 import { TweetSchema } from "../../lib/twitter.ts";
 
+await db.init();
+
 beforeAll(async () => {
   // setup db
   await db.clearDb();
@@ -45,9 +47,9 @@ beforeAll(async () => {
 
   const tweet3: TweetSchema = {
     score: -0.5,
-    text: "Toyota is a bad automaker",
-    subject: "toyota",
-    keyword: "toyota",
+    text: "Microsoft are awesome due to VS Studio Code",
+    subject: "microsoft",
+    keyword: "microsoft",
     id: "id-3",
     author_id: "Bruce Dickenson",
     date: new Date(),
@@ -80,7 +82,7 @@ describe("Start page", () => {
 
     const browser: Browser = await puppeteer.launch({
       args: ["--no-sandbox"],
-      headless: false,
+      headless: true,
     });
     const page: Page = await browser.newPage();
     await t.step("Page loaded", async () => {
@@ -90,17 +92,18 @@ describe("Start page", () => {
     });
 
     await t.step("Chart is displayed", async () => {
-      await page.waitForSelector(".chart");
+      await page.waitForSelector(".charts");
     });
 
     let text: string;
-    await t.step("Subject is displayed", async () => {
-      text = await page.$eval(".chart", (title) => title.innerText);
-      assert(text.includes("Subject: tesla"));
+    await t.step("Subject 'tesla' is displayed", async () => {
+      text = await page.$eval(".chart-tesla", (title) => title.innerText);
+      assert(text.includes("Subject: tesla Tweets: 2"));
     });
 
-    await t.step("Tweets is displayed", () => {
-      assert(text.includes("Tweets: 2"));
+    await t.step("Subject 'microsoft' is displayed", async () => {
+      text = await page.$eval(".chart-microsoft", (title) => title.innerText);
+      assert(text.includes("Subject: microsoft Tweets: 1"));
     });
 
     await browser?.close();

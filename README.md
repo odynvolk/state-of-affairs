@@ -27,13 +27,15 @@ package manager.
 $ brew install mongodb-community
 ```
 
-Configuration:
+Create a database called `stateOfAffairsDB`.
+
+- Configuration
 
 Create a .env file with values needed in your setup.
 
 ```
 TWITTER_BEARER_TOKEN=<YOUR-TOKEN>
-TWITTER_PULL=true
+TWITTER_PULL_CRON_SCHEDULE=<CRON-SCHEDULE>
 TWITTER_PULL_LIMIT=<NUMBER-OF-TWEETS-TO-PULL>
 TWITTER_FILTER=-is:retweet followers_count:100 tweets_count:100
 TWITTER_SUBJECT_1=tesla:tesla;$tsla
@@ -42,7 +44,7 @@ TWITTER_SUBJECT_2=microsoft:microsoft;$msft
 
 - Python
 
-You need Python 3 on your machine. 
+You need Python 3 on your machine.
 
 - Miniconda (optional)
 
@@ -75,7 +77,7 @@ python ./sentiment/server.py
 Start the Deno server:
 
 ```bash
-deno task start --allow-read --allow-env
+deno task start
 ```
 
 This will watch the project directory and restart as necessary.

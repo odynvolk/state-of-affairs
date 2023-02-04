@@ -10,10 +10,10 @@ import manifest from "./fresh.gen.ts";
 import twindPlugin from "$fresh/plugins/twind.ts";
 import twindConfig from "./twind.config.ts";
 
-import twitter from "./lib/twitter.ts";
-
-if (Boolean(Deno.env.get("TWITTER_PULL"))) {
-  await twitter(Number(Deno.env.get("TWITTER_PULL_LIMIT")));
+if (Deno.env.get("TWITTER_PULL_CRON_SCHEDULE")) {
+  import("./lib/twitter.ts").then(async (t) => await t.default());
+} else {
+  console.log("No TWITTER_PULL_CRON_SCHEDULE set...");
 }
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });
