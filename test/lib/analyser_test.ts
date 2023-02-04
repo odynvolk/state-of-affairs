@@ -9,7 +9,6 @@ Deno.test("A valid positive text about Tesla", async () => {
   const text =
     "Tesla dominates the 🇬🇧UK Market in December 2022 and has the largest new car market share";
   analyser.analyse(text, (score: number) => {
-    console.log("@@@ analyse_test.ts  9", score);
     assertEquals(score, 1);
   });
   await delay(100);
