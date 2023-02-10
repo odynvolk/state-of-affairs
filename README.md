@@ -77,7 +77,7 @@ python ./sentiment/server.py
 Start the Deno server:
 
 ```bash
-deno task start
+deno task start --allow-read --allow-env
 ```
 
 This will watch the project directory and restart as necessary.

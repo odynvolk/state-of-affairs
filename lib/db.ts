@@ -43,7 +43,7 @@ const insert = async (tweet: TweetSchema): Promise<void> => {
 
 const init = async (): Promise<void> => {
   client = new MongoClient();
-  await client.connect("mongodb://localhost:27017");
+  await client.connect("mongodb://127.0.0.1:27017");
   console.log("Connected to database");
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
