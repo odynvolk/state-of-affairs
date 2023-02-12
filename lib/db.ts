@@ -1,7 +1,7 @@
 import {
   Collection,
   MongoClient,
-} from "https://deno.land/x/mongo@v0.31.1/mod.ts";
+} from "../deps.ts";
 import { TweetSchema } from "./twitter.ts";
 
 let client: MongoClient;
@@ -52,7 +52,7 @@ const init = async (): Promise<void> => {
 };
 
 const teardown = async () => {
-  console.log("Closing connection to database...");
+  console.log("Closing connection to database.");
   await client.close();
 };
 

@@ -21,7 +21,7 @@ $ brew install deno
 - MongoDB
 
 For storing tweets. On MacOS the easiest way to install Deno is through Brew
-package manager.
+package manager..
 
 ```bash
 $ brew install mongodb-community

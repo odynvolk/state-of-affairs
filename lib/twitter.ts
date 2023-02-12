@@ -1,7 +1,5 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
-import { cron } from "https://deno.land/x/deno_cron/cron.ts";
-import { ETwitterStreamEvent, TwitterApi } from "npm:twitter-api-v2@^1.13.0";
-
+import { cron, ETwitterStreamEvent, TwitterApi } from "../deps.ts";
 import analyser from "./analyser.ts";
 import db from "./db.ts";
 
@@ -80,6 +78,7 @@ export default async () => {
   const stream = await client.v2.searchStream({
     "tweet.fields": ["author_id"],
   });
+  console.log("Opened stream to Twitter.");
 
   stream.autoReconnect = true;
 
@@ -119,14 +118,27 @@ export default async () => {
     },
   );
 
+  stream.on(
+    ETwitterStreamEvent.ConnectionError,
+    (error) => {
+      console.log(`ConnectionError: ${error}`);
+    });
+
+  stream.on(
+    ETwitterStreamEvent.Error,
+    (error) => {
+      console.log(`Error: ${error}`);
+    });
+
   cron(Deno.env.get("TWITTER_PULL_CRON_SCHEDULE"), async () => {
+    console.log("Resetting number of tweets and rules.");
     numberOfTweets = 0;
     await deleteCurrentRules(client);
     await addNewRules(client);
   });
 
   Deno.addSignalListener("SIGINT", () => {
-    console.log("Closing stream to Twitter...");
+    console.log("Closing stream to Twitter.");
     stream.destroy();
   });
 };

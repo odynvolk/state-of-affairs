@@ -20,7 +20,7 @@ async def handler(websocket, path):
 
 async def main():
     async with websockets.serve(handler, "localhost", 7777):
-        print(f"Sentiment server started on port 7777...")
+        print(f"Sentiment server started on port 7777.")
         await asyncio.Future()
 
 if __name__ == "__main__":

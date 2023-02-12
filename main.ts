@@ -13,7 +13,7 @@ import twindConfig from "./twind.config.ts";
 if (Deno.env.get("TWITTER_PULL_CRON_SCHEDULE")) {
   import("./lib/twitter.ts").then(async (t) => await t.default());
 } else {
-  console.log("No TWITTER_PULL_CRON_SCHEDULE set...");
+  console.log("No TWITTER_PULL_CRON_SCHEDULE set.");
 }
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });
