@@ -2,15 +2,15 @@ import { Head } from "$fresh/runtime.ts";
 import { Handlers } from "$fresh/src/server/types.ts";
 import Panel from "../islands/Panel.tsx";
 
-import { subjects } from "../lib/twitter.ts";
+import { CHARTS_COLOUR, SUBJECTS } from "../lib/config.ts";
 
 export const handler: Handlers = {
   GET: async function (_, ctx) {
-    return ctx.render({ subjects });
+    return ctx.render({ charts_colour: CHARTS_COLOUR, subjects: SUBJECTS });
   },
 };
 
-export default function Home({ data: { subjects } }: any) {
+export default function Home({ data: { charts_colour, subjects } }: any) {
   return (
     <>
       <Head>
@@ -21,7 +21,7 @@ export default function Home({ data: { subjects } }: any) {
           State of affairs
         </h1>
       </div>
-      <Panel subjects={subjects}></Panel>
+      <Panel charts_colour={charts_colour} subjects={subjects}></Panel>
     </>
   );
 }

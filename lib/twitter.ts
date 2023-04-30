@@ -1,6 +1,6 @@
-import { config } from "https://deno.land/x/dotenv/mod.ts";
 import { cron } from "https://deno.land/x/deno_cron/cron.ts";
 import { ETwitterStreamEvent, TwitterApi } from "../deps.ts";
+import { SUBJECTS } from "./config.ts";
 
 import analyser from "./analyser.ts";
 import db from "./db.ts";
@@ -9,7 +9,7 @@ await db.init();
 await analyser.init();
 
 export interface TweetSchema {
-  score: number;
+  sentiment: number;
   text: string;
   subject: string;
   keyword: string;
@@ -18,35 +18,7 @@ export interface TweetSchema {
   date: Date;
 }
 
-interface SubjectSchema {
-  subject: string;
-  keywords: string[];
-}
-
-const readSubjectsFromConfig = () => {
-  return Object.entries(config()).reduce((acc: SubjectSchema[], entry) => {
-    if (entry.length < 2) return acc;
-
-    if (entry[0].startsWith("TWITTER_SUBJECT_")) {
-      const [key, values] = entry[1].split(":");
-      acc.push({
-        subject: key,
-        keywords: values.split(";"),
-      });
-    }
-
-    return acc;
-  }, []);
-};
-
-export const subjects: SubjectSchema[] = Deno.env.get("IS_TEST")
-  ? [{
-    subject: "tesla",
-    keywords: ["tesla"],
-  }, { subject: "microsoft", keywords: ["microsoft"] }]
-  : readSubjectsFromConfig();
-
-const rulesNew = subjects.reduce((acc: any[], subject) => {
+const rulesNew = SUBJECTS.reduce((acc: any[], subject) => {
   subject.keywords.forEach((keyword) => {
     acc.push({
       value: `${keyword} lang:en ${Deno.env.get("TWITTER_FILTER")}`,
@@ -101,9 +73,9 @@ export default async () => {
 
       const [subject, keyword] = tweet?.matching_rules[0].tag?.split(":");
 
-      analyser.analyse(text, async (score: number) => {
-        const tweetScored: TweetSchema = {
-          score,
+      analyser.analyse(text, async (sentiment: number) => {
+        const tweetAnalysed: TweetSchema = {
+          sentiment,
           text,
           subject,
           keyword,
@@ -112,7 +84,7 @@ export default async () => {
           date: new Date(),
         };
 
-        await db.insert(tweetScored);
+        await db.insert(tweetAnalysed);
       });
 
       numberOfTweets += 1;

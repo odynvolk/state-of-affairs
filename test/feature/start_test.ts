@@ -25,7 +25,7 @@ beforeAll(async () => {
   yesterday.setDate(yesterday.getDate() - 1);
 
   const tweet1: TweetSchema = {
-    score: 0.2,
+    sentiment: 1,
     text: "Tesla is quite good",
     subject: "tesla",
     keyword: "tesla",
@@ -35,7 +35,7 @@ beforeAll(async () => {
   };
 
   const tweet2: TweetSchema = {
-    score: 0.8,
+    sentiment: 1,
     text: "Tesla is awesome",
     subject: "tesla",
     keyword: "$tsla",
@@ -45,8 +45,8 @@ beforeAll(async () => {
   };
 
   const tweet3: TweetSchema = {
-    score: -0.5,
-    text: "Microsoft are awesome due to VS Studio Code",
+    sentiment: -1,
+    text: "Microsoft are crap due to VS Studio Code",
     subject: "microsoft",
     keyword: "microsoft",
     id: "id-3",
@@ -90,13 +90,25 @@ describe("Start page", () => {
       });
     });
 
-    await t.step("Panel is displayed", async () => {
-      await page.waitForSelector(".panel");
+    await t.step("Panel with timeline is displayed", async () => {
+      await page.waitForSelector(".panel-timeline");
+    });
+
+    await t.step("Panel with subjects is displayed", async () => {
+      await page.waitForSelector(".panel-subjects");
+    });
+
+    await t.step("User clicks on button for 'tesla'", async () => {
+      await page.click(".button-tesla");
     });
 
     await t.step("Chart for 'tesla' is displayed", async () => {
       const chart = await page.$eval(".chart-tesla", (el) => el);
       assertExists(chart);
+    });
+
+    await t.step("User clicks on button for 'microsoft'", async () => {
+      await page.click(".button-microsoft");
     });
 
     await t.step("Chart for 'microsoft' is displayed", async () => {
