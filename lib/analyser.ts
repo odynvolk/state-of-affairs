@@ -25,13 +25,15 @@ const init = async () => {
   });
 };
 
+const THRESHOLD = parseFloat(Deno.env.get("ANALYSER_SCORE_THRESHOLD") ?? "0.55");
+
 const analyse = (text: string, cb: Function) => {
   if (!text || text.length < 10) return NaN;
 
   try {
     ws.onmessage = (m) => {
       const sentiment = JSON.parse(m.data)[0];
-      if (sentiment.score <= 0.5) return;
+      if (sentiment.score < THRESHOLD) return;
 
       let score = 0;
       if (sentiment.label === "positive") score = 1;
