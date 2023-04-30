@@ -39,7 +39,12 @@ const readSubjectsFromConfig = () => {
   }, []);
 };
 
-export const subjects: SubjectSchema[] = readSubjectsFromConfig();
+export const subjects: SubjectSchema[] = Deno.env.get("IS_TEST")
+  ? [{
+    subject: "tesla",
+    keywords: ["tesla"],
+  }, { subject: "microsoft", keywords: ["microsoft"] }]
+  : readSubjectsFromConfig();
 
 const rulesNew = subjects.reduce((acc: any[], subject) => {
   subject.keywords.forEach((keyword) => {
@@ -126,7 +131,7 @@ export default async () => {
   });
 
   Deno.addSignalListener("SIGINT", () => {
-    console.log("Closing stream to Twitter...");
+    console.log("Closing stream to Twitter");
     stream.destroy();
   });
 };

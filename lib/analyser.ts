@@ -11,15 +11,15 @@ const init = async () => {
   return new Promise((resolve) => {
     ws = new WebSocket("ws://localhost:7777");
     ws.onopen = () => {
-      console.log("Connected to sentiment server...");
+      console.log("Connected to sentiment server.");
       resolve(true);
     };
-    ws.onclose = () => logError("Disconnected from sentiment server...");
+    ws.onclose = () => logError("Disconnected from sentiment server.");
     ws.onerror = (e) =>
       console.log(e instanceof ErrorEvent ? e.message : e.type);
 
     Deno.addSignalListener("SIGINT", () => {
-      console.log("Closing connection to sentiment server...");
+      console.log("Closing connection to sentiment server.");
       ws.close();
     });
   });
