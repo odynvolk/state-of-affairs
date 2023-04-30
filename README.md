@@ -40,6 +40,7 @@ TWITTER_PULL_LIMIT=<NUMBER-OF-TWEETS-TO-PULL>
 TWITTER_FILTER=-is:retweet followers_count:100 tweets_count:100
 TWITTER_SUBJECT_1=tesla:tesla;$tsla
 TWITTER_SUBJECT_2=microsoft:microsoft;$msft
+ANALYSER_SCORE_THRESHOLD=0.55
 ```
 
 - Python

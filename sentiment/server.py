@@ -14,7 +14,7 @@ async def handler(websocket, path):
         sentiment = sentiment_task(text)
         print(f"=========================================================================")
         print(f"Got: {text}")
-        print(f"Sentiment: {sentiment[0]['label']}")
+        print(f"Label: {sentiment[0]['label']}, Score: {sentiment[0]['score']}")
 
         await websocket.send(f"{json.dumps(sentiment)}")
 
