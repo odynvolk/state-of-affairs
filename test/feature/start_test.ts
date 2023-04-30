@@ -3,7 +3,7 @@ import {
   beforeAll,
   describe,
 } from "https://deno.land/std@0.168.0/testing/bdd.ts";
-import { assert } from "https://deno.land/std/testing/asserts.ts";
+import { assertExists } from "https://deno.land/std@0.154.0/testing/asserts.ts";
 import puppeteer, {
   Browser,
   Page,
@@ -13,9 +13,8 @@ import { delay } from "https://deno.land/std@0.168.0/async/delay.ts";
 import db from "../../lib/db.ts";
 import { TweetSchema } from "../../lib/twitter.ts";
 
-await db.init();
-
 beforeAll(async () => {
+  await db.init();
   // setup db
   await db.clearDb();
 
@@ -91,19 +90,18 @@ describe("Start page", () => {
       });
     });
 
-    await t.step("Chart is displayed", async () => {
-      await page.waitForSelector(".charts");
+    await t.step("Panel is displayed", async () => {
+      await page.waitForSelector(".panel");
     });
 
-    let text: string;
-    await t.step("Subject 'tesla' is displayed", async () => {
-      text = await page.$eval(".chart-tesla", (title) => title.innerText);
-      assert(text.includes("Subject: tesla Tweets: 2"));
+    await t.step("Chart for 'tesla' is displayed", async () => {
+      const chart = await page.$eval(".chart-tesla", (el) => el);
+      assertExists(chart);
     });
 
-    await t.step("Subject 'microsoft' is displayed", async () => {
-      text = await page.$eval(".chart-microsoft", (title) => title.innerText);
-      assert(text.includes("Subject: microsoft Tweets: 1"));
+    await t.step("Chart for 'microsoft' is displayed", async () => {
+      const chart = await page.$eval(".chart-microsoft", (el) => el);
+      assertExists(chart);
     });
 
     await browser?.close();

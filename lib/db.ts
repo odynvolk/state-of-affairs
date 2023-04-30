@@ -48,11 +48,13 @@ const init = async (): Promise<void> => {
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
 
-  Deno.addSignalListener("SIGINT", () => teardown());
+  if (!Deno.env.get("IS_TEST")) {
+    Deno.addSignalListener("SIGINT", () => teardown());
+  }
 };
 
 const teardown = async () => {
-  console.log("Closing connection to database...");
+  console.log("Closing connection to database.");
   await client.close();
 };
 
