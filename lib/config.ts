@@ -23,7 +23,7 @@ const readSubjectsFromConfig = () => {
   }, []);
 };
 
-export const SUBJECTS: SubjectSchema[] = dotEnv.IS_TEST
+export const SUBJECTS: SubjectSchema[] = Deno.env.get("IS_TEST")
   ? [{
     subject: "tesla",
     keywords: ["tesla"],
@@ -42,5 +42,4 @@ const readChartsColourSchema = (): ChartsColourSchema | undefined => {
   return Array(SUBJECTS.length).fill("Grey");
 };
 
-export const CHARTS_COLOUR: ChartsColourSchema | undefined =
-  readChartsColourSchema();
+export const CHARTS_COLOUR: ChartsColourSchema | undefined = readChartsColourSchema();

@@ -15,8 +15,7 @@ const init = async () => {
       resolve(true);
     };
     ws.onclose = () => logError("Disconnected from sentiment server.");
-    ws.onerror = (e) =>
-      console.log(e instanceof ErrorEvent ? e.message : e.type);
+    ws.onerror = (e) => console.log(e instanceof ErrorEvent ? e.message : e.type);
 
     Deno.addSignalListener("SIGINT", () => {
       console.log("Closing connection to sentiment server.");

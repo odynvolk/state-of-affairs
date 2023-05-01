@@ -1,11 +1,19 @@
 {
   "tasks": {
-    "start": "deno run -A --watch=static/,routes/ dev.ts",
-    "test": "IS_TEST=true deno test -A"
+    "start": "deno run --allow-read --allow-write --allow-env --allow-net --allow-run --watch=static/,routes/ dev.ts",
+    "test": "IS_TEST=true deno test --allow-read --allow-write --allow-env --allow-net --allow-run"
   },
   "importMap": "./import_map.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
+  },
+  "fmt": {
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["."],
+    "exclude": ["./scripts/", "./sentiment/", "./static/"]
   }
 }

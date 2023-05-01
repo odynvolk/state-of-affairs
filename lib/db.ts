@@ -6,7 +6,7 @@ const dotEnv = config();
 let client: MongoClient;
 let collection: Collection<SentimentSchema>;
 
-const nameOfCollection = dotEnv.IS_TEST ? "sentiments_test" : "sentiments";
+const nameOfCollection = Deno.env.get("IS_TEST") ? "sentiments_test" : "sentiments";
 
 const clearDb = async () => {
   await collection.deleteMany({});
@@ -51,7 +51,7 @@ const init = async (): Promise<void> => {
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
 
-  if (!dotEnv.IS_TEST) {
+  if (!Deno.env.get("IS_TEST")) {
     Deno.addSignalListener("SIGINT", () => teardown());
   }
 };
