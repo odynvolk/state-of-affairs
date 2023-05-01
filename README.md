@@ -27,7 +27,7 @@ package manager.
 $ brew install mongodb-community
 ```
 
-Create a database called `stateOfAffairsDB`.
+Create a database called `stateOfAffairsDB` and two collections called `sentiments` and `sentiments_test`. 
 
 - Configuration
 
@@ -41,6 +41,7 @@ TWITTER_FILTER=-is:retweet followers_count:100 tweets_count:100
 TWITTER_SUBJECT_1=tesla:tesla;$tsla
 TWITTER_SUBJECT_2=microsoft:microsoft;$msft
 ANALYSER_SCORE_THRESHOLD=0.55
+CHARTS_COLOUR=Red,Orange,Purple,Blue
 ```
 
 - Python

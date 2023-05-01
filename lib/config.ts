@@ -1,4 +1,6 @@
-import { config } from "https://deno.land/x/dotenv/mod.ts";
+import { config } from "../deps.ts";
+
+const dotEnv = config();
 
 interface SubjectSchema {
   subject: string;
@@ -6,7 +8,7 @@ interface SubjectSchema {
 }
 
 const readSubjectsFromConfig = () => {
-  return Object.entries(config()).reduce((acc: SubjectSchema[], entry) => {
+  return Object.entries(dotEnv).reduce((acc: SubjectSchema[], entry) => {
     if (entry.length < 2) return acc;
 
     if (entry[0].startsWith("TWITTER_SUBJECT_")) {
@@ -21,7 +23,7 @@ const readSubjectsFromConfig = () => {
   }, []);
 };
 
-export const SUBJECTS: SubjectSchema[] = Deno.env.get("IS_TEST")
+export const SUBJECTS: SubjectSchema[] = dotEnv.IS_TEST
   ? [{
     subject: "tesla",
     keywords: ["tesla"],
@@ -33,8 +35,8 @@ interface ChartsColourSchema {
 }
 
 const readChartsColourSchema = (): ChartsColourSchema | undefined => {
-  if (Deno.env.get("CHARTS_COLOUR")) {
-    return Deno.env.get("CHARTS_COLOUR")?.split(",");
+  if (dotEnv.CHARTS_COLOUR) {
+    return dotEnv.CHARTS_COLOUR?.split(",");
   }
 
   return Array(SUBJECTS.length).fill("Grey");

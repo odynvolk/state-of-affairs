@@ -1,17 +1,17 @@
 import {
   afterAll,
+  assertExists,
   beforeAll,
-  describe,
-} from "https://deno.land/std@0.168.0/testing/bdd.ts";
-import { assertExists } from "https://deno.land/std@0.154.0/testing/asserts.ts";
-import puppeteer, {
   Browser,
+  delay,
+  describe,
   Page,
-} from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
-import { delay } from "https://deno.land/std@0.168.0/async/delay.ts";
+} from "../../deps.ts";
+
+import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
 import db from "../../lib/db.ts";
-import { TweetSchema } from "../../lib/twitter.ts";
+import { SentimentSchema, SentimentTypes } from "../../lib/interfaces.ts";
 
 beforeAll(async () => {
   await db.init();
@@ -24,39 +24,45 @@ beforeAll(async () => {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
 
-  const tweet1: TweetSchema = {
-    sentiment: 1,
+  const sentiment1: SentimentSchema = {
     text: "Tesla is quite good",
-    subject: "tesla",
     keyword: "tesla",
     id: "id-1",
     author_id: "Blackie Lawless",
-    date: sixDaysAgo,
+    sentiment: 1,
+    metadata: {
+      subject: "tesla",
+      type: SentimentTypes.TWITTER,
+    },
   };
 
-  const tweet2: TweetSchema = {
-    sentiment: 1,
+  const sentiment2: SentimentSchema = {
     text: "Tesla is awesome",
-    subject: "tesla",
     keyword: "$tsla",
     id: "id-2",
     author_id: "Billy Idol",
-    date: yesterday,
+    sentiment: 1,
+    metadata: {
+      subject: "tesla",
+      type: SentimentTypes.TWITTER,
+    },
   };
 
-  const tweet3: TweetSchema = {
-    sentiment: -1,
+  const sentiment3: SentimentSchema = {
     text: "Microsoft are crap due to VS Studio Code",
-    subject: "microsoft",
     keyword: "microsoft",
     id: "id-3",
     author_id: "Bruce Dickenson",
-    date: new Date(),
+    sentiment: -1,
+    metadata: {
+      subject: "microsoft",
+      type: SentimentTypes.TWITTER,
+    },
   };
 
-  await db.insert(tweet1);
-  await db.insert(tweet2);
-  await db.insert(tweet3);
+  await db.insert(sentiment1);
+  await db.insert(sentiment2);
+  await db.insert(sentiment3);
 });
 
 afterAll(async () => {

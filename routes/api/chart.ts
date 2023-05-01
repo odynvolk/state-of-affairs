@@ -1,5 +1,5 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { TweetSchema } from "../../lib/twitter.ts";
+import { SentimentSchema } from "../../lib/twitter.ts";
 import db from "../../lib/db.ts";
 import { renderChart } from "$fresh_charts/mod.ts";
 import { ChartColors, transparentize } from "$fresh_charts/utils.ts";
@@ -53,24 +53,23 @@ export const handler = async (req: Request, ctx: HandlerContext) => {
     dates.push(date);
   }
 
-  const results = await db.find(subject, dates) ?? [];
-
-  const tweetScores = results.reduce((acc, dayWithTweets) => {
-    const sentiment = dayWithTweets?.length
-      ? dayWithTweets.reduce(
-        (intraDayAcc: number, tweet: TweetSchema) => {
-          acc.numberOfTweets += 1;
-          intraDayAcc += tweet.sentiment ?? tweet.score;
+  const allDays = await db.find(subject, dates) ?? [];
+  const timeSeries = allDays.reduce((acc, day) => {
+    const sentiment = day?.length
+      ? day.reduce(
+        (intraDayAcc: number, sentiment: SentimentSchema) => {
+          acc.numberOfDataPoints += 1;
+          intraDayAcc += sentiment.sentiment;
           return intraDayAcc;
         },
         0,
-      ) / dayWithTweets.length
+      ) / day.length
       : 0;
 
     acc.sentiments.push(sentiment);
 
     return acc;
-  }, { numberOfTweets: 0, sentiments: [] });
+  }, { numberOfDataPoints: 0, sentiments: [] });
 
   const color = ChartColors[url.searchParams.get("colour") ?? "Grey"];
   if (colors_index < COLORS.length) colors_index++;
@@ -79,7 +78,7 @@ export const handler = async (req: Request, ctx: HandlerContext) => {
   const datasets = [
     {
       label: capitalizeFirstLetter(subject),
-      data: tweetScores.sentiments,
+      data: timeSeries.sentiments,
       borderColor: color,
       // backgroundColor: transparentize(ChartColors.Purple, 0.5),
       backgroundColor: transparentize(color),
@@ -114,7 +113,7 @@ export const handler = async (req: Request, ctx: HandlerContext) => {
           display: true,
           text: `Subject: ${
             capitalizeFirstLetter(subject)
-          } Tweets: ${tweetScores.numberOfTweets}`,
+          } Data points: ${timeSeries.numberOfDataPoints}`,
         },
       },
       scales: {
