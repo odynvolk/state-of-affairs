@@ -1,5 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.177.0/testing/asserts.ts";
-import { delay } from "https://deno.land/std@0.177.0/async/delay.ts";
+import { assertEquals, delay } from "../../deps.ts";
 
 import analyser from "../../lib/analyser.ts";
 
