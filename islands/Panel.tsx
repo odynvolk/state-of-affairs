@@ -39,9 +39,7 @@ export default function Panel(props) {
         {subjects.map((subject: string, i: number) => {
           return (
             <img
-              src={`/api/chart?subject=${subject}&timeline=${timeline}&colour=${
-                props.charts_colour[i]
-              }`}
+              src={`/api/chart?subject=${subject}&timeline=${timeline}&colour=${props.charts_colour[i]}`}
               className={`mx-auto my-4 h-96 chart-${subject}`}
               alt={`Chart of ${subject} sentiment`}
             />

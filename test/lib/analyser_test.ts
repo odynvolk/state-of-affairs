@@ -5,8 +5,7 @@ import analyser from "../../lib/analyser.ts";
 await analyser.init();
 
 Deno.test("A valid positive text about Tesla", async () => {
-  const text =
-    "Tesla dominates the 🇬🇧UK Market in December 2022 and has the largest new car market share";
+  const text = "Tesla dominates the 🇬🇧UK Market in December 2022 and has the largest new car market share";
   analyser.analyse(text, (score: number) => {
     assertEquals(score, 1);
   });

@@ -27,7 +27,7 @@ package manager.
 $ brew install mongodb-community
 ```
 
-Create a database called `stateOfAffairsDB` and two collections called `sentiments` and `sentiments_test`. 
+Create a database called `stateOfAffairsDB` and two collections called `sentiments` and `sentiments_test`.
 
 - Configuration
 
@@ -79,7 +79,7 @@ python ./sentiment/server.py
 Start the Deno server:
 
 ```bash
-deno task start --allow-read --allow-env
+deno task start
 ```
 
 This will watch the project directory and restart as necessary.
@@ -100,5 +100,5 @@ used for documentation purposes. Focus on testing what is vital for the feature.
 To run all tests...
 
 ```bash
-IS_TEST=true deno test --allow-read --allow-write --allow-env --allow-net --allow-run
+deno task test
 ```

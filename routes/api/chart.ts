@@ -92,9 +92,7 @@ export const handler = async (req: Request, ctx: HandlerContext) => {
   return renderChart({
     type: "line",
     data: {
-      labels: dates.map((date) =>
-        `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-      ),
+      labels: dates.map((date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`),
       datasets,
     },
     options: {
@@ -111,9 +109,7 @@ export const handler = async (req: Request, ctx: HandlerContext) => {
         },
         title: {
           display: true,
-          text: `Subject: ${
-            capitalizeFirstLetter(subject)
-          } Data points: ${timeSeries.numberOfDataPoints}`,
+          text: `Subject: ${capitalizeFirstLetter(subject)} Data points: ${timeSeries.numberOfDataPoints}`,
         },
       },
       scales: {
