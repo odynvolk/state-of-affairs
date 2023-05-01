@@ -25,7 +25,9 @@ const init = async () => {
   });
 };
 
-const THRESHOLD = parseFloat(Deno.env.get("ANALYSER_SCORE_THRESHOLD") ?? "0.55");
+const THRESHOLD = parseFloat(
+  Deno.env.get("ANALYSER_SCORE_THRESHOLD") ?? "0.55",
+);
 
 const analyse = (text: string, cb: Function) => {
   if (!text || text.length < 10) return NaN;
@@ -35,11 +37,9 @@ const analyse = (text: string, cb: Function) => {
       const sentiment = JSON.parse(m.data)[0];
       if (sentiment.score < THRESHOLD) return;
 
-      let score = 0;
-      if (sentiment.label === "positive") score = 1;
-      else if (sentiment.label === "negative") score = -1;
-
-      cb(score);
+      if (sentiment.label === "positive") cb(1);
+      else if (sentiment.label === "negative") cb(-1);
+      else cb(0);
     };
     ws.send(text);
   } catch (_) {

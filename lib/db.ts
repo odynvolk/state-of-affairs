@@ -1,7 +1,4 @@
-import {
-  Collection,
-  MongoClient,
-} from "../deps.ts";
+import { Collection, MongoClient } from "../deps.ts";
 import { TweetSchema } from "./twitter.ts";
 
 let client: MongoClient;
@@ -43,8 +40,10 @@ const insert = async (tweet: TweetSchema): Promise<void> => {
 
 const init = async (): Promise<void> => {
   client = new MongoClient();
-  await client.connect("mongodb://127.0.0.1:27017");
-  console.log("Connected to database");
+  await client.connect(
+    Deno.env.get("MONGODB_URI") ?? "mongodb://127.0.0.1:27017",
+  );
+  console.log("Connected to database.");
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
 
