@@ -1,22 +1,12 @@
-import { cron } from "https://deno.land/x/deno_cron/cron.ts";
-import { ETwitterStreamEvent, TwitterApi } from "../deps.ts";
+import { cron, ETwitterStreamEvent, TwitterApi } from "../deps.ts";
 import { SUBJECTS } from "./config.ts";
 
 import analyser from "./analyser.ts";
 import db from "./db.ts";
+import { SentimentSchema, SentimentTypes } from "./interfaces.ts";
 
 await db.init();
 await analyser.init();
-
-export interface TweetSchema {
-  sentiment: number;
-  text: string;
-  subject: string;
-  keyword: string;
-  id: string;
-  author_id: string;
-  date: Date;
-}
 
 const rulesNew = SUBJECTS.reduce((acc: any[], subject) => {
   subject.keywords.forEach((keyword) => {
@@ -46,7 +36,7 @@ export default async () => {
   const token = Deno.env.get("TWITTER_BEARER_TOKEN");
   if (!token) throw Error("Missing environment variable: TWITTER_BEARER_TOKEN");
 
-  let numberOfTweets = 0;
+  let numberOfDataPoints = 0;
 
   const client = new TwitterApi(
     token,
@@ -74,22 +64,22 @@ export default async () => {
       const [subject, keyword] = tweet?.matching_rules[0].tag?.split(":");
 
       analyser.analyse(text, async (sentiment: number) => {
-        const tweetAnalysed: TweetSchema = {
+        const analysedSentiment: SentimentSchema = {
           sentiment,
           text,
           subject,
           keyword,
           id,
           author_id,
-          date: new Date(),
+          type: SentimentTypes.TWITTER,
         };
 
-        await db.insert(tweetAnalysed);
+        await db.insert(analysedSentiment);
       });
 
-      numberOfTweets += 1;
+      numberOfDataPoints += 1;
 
-      if (numberOfTweets === TWITTER_PULL_LIMIT) {
+      if (numberOfDataPoints === TWITTER_PULL_LIMIT) {
         console.log("Tweet limit reached for period.");
         await deleteCurrentRules(client);
       }
@@ -97,7 +87,7 @@ export default async () => {
   );
 
   cron(Deno.env.get("TWITTER_PULL_CRON_SCHEDULE"), async () => {
-    numberOfTweets = 0;
+    numberOfDataPoints = 0;
     await deleteCurrentRules(client);
     await addNewRules(client);
   });

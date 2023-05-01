@@ -1,10 +1,12 @@
-import { Collection, MongoClient } from "../deps.ts";
-import { TweetSchema } from "./twitter.ts";
+import { Collection, config, MongoClient } from "../deps.ts";
+import { SentimentSchema } from "./interfaces.ts";
+
+const dotEnv = config();
 
 let client: MongoClient;
-let collection: Collection<TweetSchema>;
+let collection: Collection<SentimentSchema>;
 
-const nameOfCollection = Deno.env.get("IS_TEST") ? "tweets_test" : "tweets";
+const nameOfCollection = dotEnv.IS_TEST ? "sentiments_test" : "sentiments";
 
 const clearDb = async () => {
   await collection.deleteMany({});
@@ -22,32 +24,34 @@ const find = async (
     endOfDay.setUTCHours(23, 59, 59, 999);
 
     const filter: any = {
-      subject,
-      date: {
+      ts: {
         "$gte": beginningOfDay,
         "$lt": endOfDay,
       },
+      "metadata.subject": subject,
     };
 
-    return collection.find(filter).map((tweet) => tweet);
+    return collection.find(filter).map((sentiment) => sentiment);
   }));
 };
 
-const insert = async (tweet: TweetSchema): Promise<void> => {
-  const result = await collection.insertOne(tweet);
+const insert = async (sentiment: SentimentSchema): Promise<void> => {
+  const result = await collection.insertOne(
+    Object.assign({}, sentiment, { ts: new Date() }),
+  );
   console.log("Inserted document =>", result);
 };
 
 const init = async (): Promise<void> => {
   client = new MongoClient();
   await client.connect(
-    Deno.env.get("MONGODB_URI") ?? "mongodb://127.0.0.1:27017",
+    dotEnv.MONGODB_URI ?? "mongodb://127.0.0.1:27017",
   );
   console.log("Connected to database.");
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
 
-  if (!Deno.env.get("IS_TEST")) {
+  if (!dotEnv.IS_TEST) {
     Deno.addSignalListener("SIGINT", () => teardown());
   }
 };
