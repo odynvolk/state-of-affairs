@@ -65,13 +65,15 @@ export default async () => {
 
       analyser.analyse(text, async (sentiment: number) => {
         const analysedSentiment: SentimentSchema = {
-          sentiment,
           text,
-          subject,
           keyword,
           id,
           author_id,
-          type: SentimentTypes.TWITTER,
+          sentiment,
+          metadata: {
+            subject,
+            type: SentimentTypes.TWITTER,
+          },
         };
 
         await db.insert(analysedSentiment);
