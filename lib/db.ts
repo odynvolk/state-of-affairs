@@ -1,12 +1,11 @@
-import { Collection, config, MongoClient } from "../deps.ts";
+import { Collection, MongoClient } from "../deps.ts";
 import { SentimentSchema } from "./interfaces.ts";
-
-const dotEnv = config();
+import { dotEnv, IS_TEST } from "./config.ts";
 
 let client: MongoClient;
 let collection: Collection<SentimentSchema>;
 
-const nameOfCollection = Deno.env.get("IS_TEST") ? "sentiments_test" : "sentiments";
+const nameOfCollection = IS_TEST ? "sentiments_test" : "sentiments";
 
 const clearDb = async () => {
   await collection.deleteMany({});
@@ -51,7 +50,7 @@ const init = async (): Promise<void> => {
   const db = client.database("stateOfAffairsDB");
   collection = db.collection(nameOfCollection);
 
-  if (!Deno.env.get("IS_TEST")) {
+  if (!IS_TEST) {
     Deno.addSignalListener("SIGINT", () => teardown());
   }
 };
