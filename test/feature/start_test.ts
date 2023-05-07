@@ -1,7 +1,6 @@
-import { afterAll, assertExists, beforeAll, Browser, delay, describe, Page } from "../../deps.ts";
-
 import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
+import { afterAll, assertExists, beforeAll, Browser, delay, describe, Page } from "../../deps.ts";
 import db from "../../lib/db.ts";
 import { SentimentSchema, SentimentTypes } from "../../lib/interfaces.ts";
 

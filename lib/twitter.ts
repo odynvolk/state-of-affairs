@@ -1,5 +1,5 @@
 import { cron, ETwitterStreamEvent, TwitterApi } from "../deps.ts";
-import { SUBJECTS } from "./config.ts";
+import { dotEnv, SUBJECTS } from "./config.ts";
 
 import analyser from "./analyser.ts";
 import db from "./db.ts";
@@ -11,7 +11,7 @@ await analyser.init();
 const rulesNew = SUBJECTS.reduce((acc: any[], subject) => {
   subject.keywords.forEach((keyword) => {
     acc.push({
-      value: `${keyword} lang:en ${Deno.env.get("TWITTER_FILTER")}`,
+      value: `${keyword} ${dotEnv.TWITTER_FILTER}`,
       tag: `${subject.subject}:${keyword}`,
     });
   });
@@ -33,7 +33,7 @@ const deleteCurrentRules = async (client: TwitterApi) => {
 };
 
 export default async () => {
-  const token = Deno.env.get("TWITTER_BEARER_TOKEN");
+  const token = dotEnv.TWITTER_BEARER_TOKEN;
   if (!token) throw Error("Missing environment variable: TWITTER_BEARER_TOKEN");
 
   let numberOfDataPoints = 0;
@@ -42,10 +42,10 @@ export default async () => {
     token,
   );
 
-  const TWITTER_PULL_LIMIT = Number(Deno.env.get("TWITTER_PULL_LIMIT") ?? "1");
+  const TWITTER_PULL_LIMIT = Number(dotEnv.TWITTER_PULL_LIMIT ?? "1");
 
   const stream = await client.v2.searchStream({
-    "tweet.fields": ["author_id"],
+    "tweet.fields": ["author_id", "context_annotations"],
   });
 
   stream.autoReconnect = true;
@@ -79,7 +79,7 @@ export default async () => {
         await db.insert(analysedSentiment);
       });
 
-      numberOfDataPoints += 1;
+      numberOfDataPoints++;
 
       if (numberOfDataPoints === TWITTER_PULL_LIMIT) {
         console.log("Tweet limit reached for period.");
@@ -88,14 +88,14 @@ export default async () => {
     },
   );
 
-  cron(Deno.env.get("TWITTER_PULL_CRON_SCHEDULE"), async () => {
+  cron(dotEnv.TWITTER_PULL_CRON_SCHEDULE, async () => {
     numberOfDataPoints = 0;
     await deleteCurrentRules(client);
     await addNewRules(client);
   });
 
   Deno.addSignalListener("SIGINT", () => {
-    console.log("Closing stream to Twitter");
+    console.log("Closing stream to Twitter.");
     stream.destroy();
   });
 };

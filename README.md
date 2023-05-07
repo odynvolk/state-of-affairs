@@ -31,17 +31,18 @@ Create a database called `stateOfAffairsDB` and two collections called `sentimen
 
 - Configuration
 
-Create a .env file with values needed in your setup.
+Create a `.env` file with values needed in your setup. There's a `.env.defaults` where you can draw some inspiration from.
 
 ```
+SUBJECT_1=tesla:tesla;$tsla
+SUBJECT_2=microsoft:microsoft;$msft
+CHARTS_COLOUR=Red,Orange,Purple,Blue
 TWITTER_BEARER_TOKEN=<YOUR-TOKEN>
 TWITTER_PULL_CRON_SCHEDULE=<CRON-SCHEDULE>
 TWITTER_PULL_LIMIT=<NUMBER-OF-TWEETS-TO-PULL>
 TWITTER_FILTER=-is:retweet followers_count:100 tweets_count:100
-TWITTER_SUBJECT_1=tesla:tesla;$tsla
-TWITTER_SUBJECT_2=microsoft:microsoft;$msft
 ANALYSER_SCORE_THRESHOLD=0.55
-CHARTS_COLOUR=Red,Orange,Purple,Blue
+MONGODB_URI=mongodb://127.0.0.1:27017
 ```
 
 - Python
