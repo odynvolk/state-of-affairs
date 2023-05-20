@@ -10,10 +10,24 @@ import manifest from "./fresh.gen.ts";
 import twindPlugin from "$fresh/plugins/twind.ts";
 import twindConfig from "./twind.config.ts";
 
-if (Deno.env.get("TWITTER_PULL_CRON_SCHEDULE")) {
+import { dotEnv } from "./lib/config.ts";
+
+import analyser from "./lib/analyser.ts";
+import db from "./lib/db.ts";
+
+await db.init();
+await analyser.init();
+
+if (dotEnv.TWITTER_PULL_CRON_SCHEDULE) {
   import("./lib/twitter.ts").then(async (t) => await t.default());
 } else {
   console.log("No TWITTER_PULL_CRON_SCHEDULE set.");
+}
+
+if (dotEnv.NOSTR_ENABLE) {
+  import("./lib/nostr.ts").then(async (n) => await n.default());
+} else {
+  console.log("NOSTR_ENABLE not set.");
 }
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });

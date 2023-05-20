@@ -2,13 +2,11 @@ import { cron, ETwitterStreamEvent, TwitterApi } from "../deps.ts";
 import { dotEnv, SUBJECTS } from "./config.ts";
 
 import analyser from "./analyser.ts";
+import { clean } from "./text.ts";
 import db from "./db.ts";
 import { SentimentSchema, SentimentTypes } from "./interfaces.ts";
 
-await db.init();
-await analyser.init();
-
-const rulesNew = SUBJECTS.reduce((acc: any[], subject) => {
+const rulesNew = SUBJECTS.reduce((acc, subject) => {
   subject.keywords.forEach((keyword) => {
     acc.push({
       value: `${keyword} ${dotEnv.TWITTER_FILTER}`,
@@ -62,10 +60,11 @@ export default async () => {
       } = tweet?.data ?? {};
 
       const [subject, keyword] = tweet?.matching_rules[0].tag?.split(":");
+      const cleanedText = clean(text);
 
-      analyser.analyse(text, async (sentiment: number) => {
+      analyser.analyse(cleanedText, async (sentiment: number) => {
         const analysedSentiment: SentimentSchema = {
-          text,
+          text: cleanedText,
           keyword,
           id,
           author_id,

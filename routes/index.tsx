@@ -3,6 +3,7 @@ import { Handlers } from "$fresh/src/server/types.ts";
 import Panel from "../islands/Panel.tsx";
 
 import { CHARTS_COLOUR, SUBJECTS } from "../lib/config.ts";
+import db from "../lib/db.ts";
 
 export const handler: Handlers = {
   GET: async function (_, ctx) {
@@ -10,7 +11,7 @@ export const handler: Handlers = {
   },
 };
 
-export default function Home({ data: { charts_colour, subjects } }: any) {
+export default function Home({ data: { charts_colour, first_date, subjects } }: any) {
   return (
     <>
       <Head>

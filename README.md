@@ -6,6 +6,7 @@ analysis on it.
 Fetches...
 
 1. Tweets from [https://twitter.com/](https://twitter.com/)
+2. Tweets from [https://nostr.com/](https://nostr.com/)
 
 ### Prerequisites:
 
@@ -31,7 +32,7 @@ Create a database called `stateOfAffairsDB` and two collections called `sentimen
 
 - Configuration
 
-Create a `.env` file with values needed in your setup. There's a `.env.defaults` where you can draw some inspiration from.
+Create a `.env` file with values needed in your setup.
 
 ```
 SUBJECT_1=tesla:tesla;$tsla
@@ -41,6 +42,7 @@ TWITTER_BEARER_TOKEN=<YOUR-TOKEN>
 TWITTER_PULL_CRON_SCHEDULE=<CRON-SCHEDULE>
 TWITTER_PULL_LIMIT=<NUMBER-OF-TWEETS-TO-PULL>
 TWITTER_FILTER=-is:retweet followers_count:100 tweets_count:100
+NOSTR_ENABLE=true
 ANALYSER_SCORE_THRESHOLD=0.55
 MONGODB_URI=mongodb://127.0.0.1:27017
 ```
