@@ -1,4 +1,5 @@
 export enum SentimentTypes {
+  NOSTR = "nostr",
   TWITTER = "twitter",
 }
 

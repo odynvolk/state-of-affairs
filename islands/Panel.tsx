@@ -1,9 +1,12 @@
 import { useState } from "preact/hooks";
 import { Button } from "../components/Button.tsx";
+import { yearToDate } from "../lib/dates.ts";
 
 export default function Panel(props) {
   const [subjects, setSubjects] = useState([]);
   const [timeline, setTimeline] = useState(7);
+
+  const firstDate = new Date(props.first_date);
 
   async function selectSubject(selectedSubject) {
     const selectedSubjects = subjects.slice();
@@ -21,7 +24,8 @@ export default function Panel(props) {
         <Button onClick={() => setTimeline(7)}>1 week</Button>
         <Button onClick={() => setTimeline(30)}>1 month</Button>
         <Button onClick={() => setTimeline(90)}>3 months</Button>
-        <Button onClick={() => setTimeline(365)}>YTD</Button>
+        <Button onClick={() => setTimeline(yearToDate())}>YTD</Button>
+        <Button onClick={() => setTimeline(365)}>1 year</Button>
         <Button onClick={() => setTimeline(365 * 3)}>3 years</Button>
         <Button onClick={() => setTimeline(365 * 10)}>Max</Button>
       </div>

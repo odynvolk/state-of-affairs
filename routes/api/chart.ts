@@ -3,12 +3,9 @@ import { SentimentSchema } from "../../lib/twitter.ts";
 import db from "../../lib/db.ts";
 import { renderChart } from "$fresh_charts/mod.ts";
 import { ChartColors, transparentize } from "$fresh_charts/utils.ts";
+import { getDateTimeline } from "../../lib/dates.ts";
 
-const ONE_DAY_IN_MILLISECONDS = 86400000;
-
-await db.init();
-
-const capitalizeFirstLetter = (str) => `${str[0].toUpperCase()}${str.slice(1)}`;
+const capitalizeFirstLetter = (str: string) => `${str[0].toUpperCase()}${str.slice(1)}`;
 
 let colors_index = 0;
 const COLORS = [
@@ -42,16 +39,7 @@ export const handler = async (req: Request, ctx: HandlerContext) => {
     return ctx.render("");
   }
 
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() + 1);
-
-  const dates: Date[] = [];
-  for (let i = timeline; i > 0; i--) {
-    const date = new Date(
-      startDate.getTime() - (i * ONE_DAY_IN_MILLISECONDS),
-    );
-    dates.push(date);
-  }
+  const dates = getDateTimeline(timeline);
 
   const allDays = await db.find(subject, dates) ?? [];
   const timeSeries = allDays.reduce((acc, day) => {

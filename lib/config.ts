@@ -1,7 +1,7 @@
-import { config } from "../deps.ts";
+import { load } from "../deps.ts";
 
 export const IS_TEST = !!Deno.env.get("IS_TEST");
-export const dotEnv = IS_TEST ? config({ path: "./.env.test" }) : config();
+export const dotEnv = IS_TEST ? await load({ envPath: "./.env.test" }) : await load();
 
 interface SubjectSchema {
   subject: string;

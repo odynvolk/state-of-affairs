@@ -1,6 +1,7 @@
 import { Collection, MongoClient } from "../deps.ts";
-import { SentimentSchema } from "./interfaces.ts";
 import { dotEnv, IS_TEST } from "./config.ts";
+import { getBeginningOfDay, getEndOfDay } from "./dates.ts";
+import { SentimentSchema } from "./interfaces.ts";
 
 let client: MongoClient;
 let collection: Collection<SentimentSchema>;
@@ -16,21 +17,15 @@ const find = async (
   dates: Date[],
 ): Promise<any[]> => {
   return await Promise.all(dates.map((date) => {
-    const beginningOfDay = new Date(date.getTime());
-    beginningOfDay.setUTCHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date.getTime());
-    endOfDay.setUTCHours(23, 59, 59, 999);
-
     const filter: any = {
       ts: {
-        "$gte": beginningOfDay,
-        "$lt": endOfDay,
+        "$gte": getBeginningOfDay(date),
+        "$lt": getEndOfDay(date),
       },
       "metadata.subject": subject,
     };
 
-    return collection.find(filter).map((sentiment) => sentiment);
+    return collection.find(filter).toArray();
   }));
 };
 

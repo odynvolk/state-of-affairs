@@ -1,11 +1,10 @@
 const logError = (msg: string) => {
   console.log(msg);
-  Deno.exit(1);
 };
 
 let ws: WebSocket;
 
-const init = async () => {
+const init = () => {
   if (ws) return Promise.resolve(true);
 
   return new Promise((resolve) => {
